@@ -77,9 +77,9 @@ export default function RoutinesScreen({
       <button
         type="button"
         onClick={() => onStartWorkout(null)}
-        className="h-12 w-full rounded-xl text-sm font-semibold text-steel transition-colors active:bg-card"
+        className="h-12 w-full rounded-xl border border-line bg-card text-base font-semibold text-iron shadow-sm transition-colors active:bg-chalk"
       >
-        Start an empty workout instead
+        Start an empty workout
       </button>
     </div>
   );
