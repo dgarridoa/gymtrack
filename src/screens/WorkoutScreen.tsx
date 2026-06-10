@@ -14,18 +14,22 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const updateLog = (index: number, log: ExerciseLog) =>
     update(draft.exercises.map((l, i) => (i === index ? log : l)));
 
+  /** Sets from the most recent session containing the exercise. */
+  const lastSessionSets = (exerciseId: string): SetEntry[] | null => {
+    for (const session of data.sessions) {
+      const prev = session.exercises.find((e) => e.exerciseId === exerciseId);
+      if (prev && prev.sets.length > 0) return prev.sets;
+    }
+    return null;
+  };
+
   /** Seed a new set from the last set this workout, or the most recent
    *  session containing the exercise, so steppers start near target. */
   const seedSet = (log: ExerciseLog): SetEntry => {
     const last = log.sets[log.sets.length - 1];
     if (last) return { ...last };
-    for (const session of data.sessions) {
-      const prev = session.exercises.find(
-        (e) => e.exerciseId === log.exerciseId,
-      );
-      const prevLast = prev?.sets[prev.sets.length - 1];
-      if (prevLast) return { ...prevLast };
-    }
+    const prevSets = lastSessionSets(log.exerciseId);
+    if (prevSets) return { ...prevSets[prevSets.length - 1] };
     return { weight: 20, reps: 8 };
   };
 
@@ -65,7 +69,9 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
         </button>
       </div>
 
-      {draft.exercises.map((log, i) => (
+      {draft.exercises.map((log, i) => {
+        const prevSets = lastSessionSets(log.exerciseId);
+        return (
         <section
           key={log.exerciseId}
           className="rounded-2xl border border-line bg-card p-4 shadow-sm"
@@ -87,6 +93,12 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
               </button>
             )}
           </div>
+          {prevSets && (
+            <p className="text-sm text-steel">
+              Last time:{" "}
+              {prevSets.map((s) => `${s.weight}kg × ${s.reps}`).join(" · ")}
+            </p>
+          )}
 
           {log.sets.map((set, si) => (
             <div key={si} className="mt-3 border-t border-line pt-2">
@@ -153,7 +165,8 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             + Add set
           </button>
         </section>
-      ))}
+        );
+      })}
 
       <ExerciseInput
         excludeIds={draft.exercises.map((l) => l.exerciseId)}

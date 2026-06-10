@@ -46,7 +46,13 @@ export default function App() {
         </button>
       )}
 
-      {!showWorkout && <TabBar active={tab} onChange={setTab} />}
+      <TabBar
+        active={showWorkout ? null : tab}
+        onChange={(next) => {
+          setTab(next);
+          setInWorkout(false);
+        }}
+      />
     </div>
   );
 }

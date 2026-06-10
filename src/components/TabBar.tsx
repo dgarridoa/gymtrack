@@ -55,7 +55,8 @@ export default function TabBar({
   active,
   onChange,
 }: {
-  active: Tab;
+  /** null when a non-tab screen (active workout) is showing. */
+  active: Tab | null;
   onChange: (tab: Tab) => void;
 }) {
   return (
