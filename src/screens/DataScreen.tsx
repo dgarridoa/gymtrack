@@ -33,9 +33,9 @@ export default function DataScreen() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-slate-100">Data</h1>
+      <h1 className="font-display text-4xl font-bold uppercase">Data</h1>
 
-      <p className="rounded-xl bg-slate-800/60 p-4 text-sm text-slate-400">
+      <p className="rounded-2xl border border-line bg-card p-4 text-sm text-steel shadow-sm">
         Everything is stored locally in this browser ({data.routines.length}{" "}
         routines, {data.sessions.length} workouts). Export a JSON backup before
         clearing browser data or switching devices.
@@ -44,7 +44,7 @@ export default function DataScreen() {
       <button
         type="button"
         onClick={() => exportToFile(data)}
-        className="h-14 w-full rounded-2xl bg-emerald-600 text-lg font-semibold text-white active:bg-emerald-700"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors active:bg-plate-red-deep"
       >
         Export backup (JSON)
       </button>
@@ -52,7 +52,7 @@ export default function DataScreen() {
       <button
         type="button"
         onClick={() => fileRef.current?.click()}
-        className="h-14 w-full rounded-2xl border border-slate-700 text-lg font-semibold text-slate-200 active:bg-slate-800"
+        className="h-14 w-full rounded-2xl border border-line bg-card text-lg font-semibold text-iron shadow-sm transition-colors active:bg-chalk"
       >
         Import backup
       </button>
@@ -71,10 +71,10 @@ export default function DataScreen() {
       {message && (
         <p
           role="status"
-          className={`rounded-xl p-4 text-sm ${
+          className={`rounded-2xl p-4 text-sm font-medium ${
             message.kind === "ok"
-              ? "bg-emerald-900/40 text-emerald-300"
-              : "bg-rose-900/40 text-rose-300"
+              ? "bg-plate-green/10 text-plate-green"
+              : "bg-plate-red/10 text-plate-red"
           }`}
         >
           {message.text}

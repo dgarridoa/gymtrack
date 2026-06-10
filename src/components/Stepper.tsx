@@ -24,14 +24,14 @@ export default function Stepper({
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+      <span className="text-xs font-semibold uppercase tracking-widest text-steel">
         {label}
       </span>
-      <div className="flex items-center overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
+      <div className="flex items-center overflow-hidden rounded-xl border border-line bg-card shadow-sm">
         <button
           type="button"
           aria-label={`Decrease ${label}`}
-          className="h-12 w-12 shrink-0 text-2xl font-bold text-emerald-400 active:bg-slate-700"
+          className="h-12 w-12 shrink-0 text-2xl font-bold text-plate-red transition-colors active:bg-chalk"
           onClick={() => onChange(clamp(value - step))}
         >
           −
@@ -43,7 +43,7 @@ export default function Stepper({
           min={min}
           value={value}
           aria-label={label}
-          className="h-12 w-16 border-x border-slate-700 bg-transparent text-center text-lg font-semibold text-slate-100 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="h-12 w-16 border-x border-line bg-transparent text-center font-display text-2xl font-semibold text-iron outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           onChange={(e) => {
             const parsed = Number(e.target.value);
             onChange(Number.isFinite(parsed) ? clamp(parsed) : min);
@@ -53,7 +53,7 @@ export default function Stepper({
         <button
           type="button"
           aria-label={`Increase ${label}`}
-          className="h-12 w-12 shrink-0 text-2xl font-bold text-emerald-400 active:bg-slate-700"
+          className="h-12 w-12 shrink-0 text-2xl font-bold text-plate-red transition-colors active:bg-chalk"
           onClick={() => onChange(clamp(value + step))}
         >
           +

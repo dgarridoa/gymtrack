@@ -1,13 +1,57 @@
+@import "@fontsource/barlow/latin-400.css";
+@import "@fontsource/barlow/latin-500.css";
+@import "@fontsource/barlow/latin-600.css";
+@import "@fontsource/barlow/latin-700.css";
+@import "@fontsource/barlow-condensed/latin-600.css";
+@import "@fontsource/barlow-condensed/latin-700.css";
 @import "tailwindcss";
+
+/*
+ * Chalk & iron theme. Accent colors follow IWF competition plate
+ * colors (25kg red, 20kg blue, 15kg yellow, 10kg green) — red is the
+ * primary action color, the others encode plate weights in the UI.
+ */
+@theme {
+  --font-sans: "Barlow", system-ui, ui-sans-serif, sans-serif;
+  --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
+
+  --color-chalk: #f5f4ef;
+  --color-card: #ffffff;
+  --color-iron: #1a1c21;
+  --color-steel: #5f6570;
+  --color-line: #e4e1d8;
+  --color-plate-red: #c8102e;
+  --color-plate-red-deep: #a30d26;
+  --color-plate-blue: #1466b8;
+  --color-plate-yellow: #eaa221;
+  --color-plate-green: #0b8a3c;
+}
 
 html {
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
+  background: var(--color-chalk);
+  color: var(--color-iron);
+  font-family: var(--font-sans);
   overscroll-behavior-y: none;
 }
 
 button {
   touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-plate-red);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

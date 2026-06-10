@@ -15,8 +15,8 @@ export default defineConfig({
         short_name: "GymTrack",
         description:
           "Track weightlifting routines, log sets with weight and reps, and watch your progress.",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#f5f4ef",
+        background_color: "#f5f4ef",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",

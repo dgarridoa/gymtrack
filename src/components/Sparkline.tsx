@@ -24,16 +24,29 @@ export default function Sparkline({ values }: { values: number[] }) {
       role="img"
       aria-label="Progress chart"
     >
+      {values.length > 1 && (
+        <polygon
+          points={`${x(0)},${h - pad} ${points} ${x(values.length - 1)},${h - pad}`}
+          fill="var(--color-plate-red)"
+          opacity="0.08"
+        />
+      )}
       <polyline
         points={points}
         fill="none"
-        stroke="#34d399"
+        stroke="var(--color-plate-red)"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {values.map((v, i) => (
-        <circle key={i} cx={x(i)} cy={y(v)} r="3.5" fill="#34d399" />
+        <circle
+          key={i}
+          cx={x(i)}
+          cy={y(v)}
+          r="3.5"
+          fill="var(--color-plate-red)"
+        />
       ))}
     </svg>
   );

@@ -31,6 +31,15 @@ npm run preview  # serve the production build locally
 npm run icons    # regenerate PWA icons in public/
 ```
 
+## Design
+
+Chalk-and-iron light theme with accents taken from IWF competition plate
+colors (red 25 / blue 20 / yellow 15 / green 10); typography is Barlow +
+Barlow Condensed, self-hosted so offline use keeps working. In the workout
+logger, a plate-stack glyph shows how to load one side of a 20kg bar for
+the entered weight. The repo ships Anthropic's `frontend-design` skill at
+`.claude/skills/frontend-design/` for future UI work in Claude Code.
+
 ## Deploying to Vercel
 
 The repo is ready for Vercel out of the box (`vercel.json` sets the Vite

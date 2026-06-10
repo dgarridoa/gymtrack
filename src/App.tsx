@@ -16,7 +16,7 @@ export default function App() {
   const showWorkout = inWorkout && draft !== null;
 
   return (
-    <div className="min-h-dvh bg-slate-900 text-slate-100">
+    <div className="min-h-dvh bg-chalk text-iron">
       <main className="mx-auto max-w-md px-4 pb-40 pt-[max(1rem,env(safe-area-inset-top))]">
         {showWorkout ? (
           <WorkoutScreen onDone={() => setInWorkout(false)} />
@@ -40,7 +40,7 @@ export default function App() {
         <button
           type="button"
           onClick={() => setInWorkout(true)}
-          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mx-auto h-12 max-w-md rounded-2xl bg-amber-500 text-base font-semibold text-slate-900 shadow-lg active:bg-amber-600"
+          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mx-auto h-12 max-w-md rounded-2xl bg-plate-yellow text-base font-semibold text-iron shadow-lg transition-colors active:bg-plate-yellow/80"
         >
           ▶ Resume workout — {draft.routineName}
         </button>

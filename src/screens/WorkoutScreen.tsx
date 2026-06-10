@@ -2,6 +2,7 @@ import type { ExerciseLog, SetEntry } from "../types";
 import { useStore } from "../store";
 import Stepper from "../components/Stepper";
 import ExerciseInput from "../components/ExerciseInput";
+import PlateStack from "../components/PlateStack";
 
 export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const { data, draft, dispatch, exerciseName } = useStore();
@@ -37,10 +38,10 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">
+          <h1 className="font-display text-4xl font-bold uppercase">
             {draft.routineName}
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-steel">
             Started{" "}
             {new Date(draft.startedAt).toLocaleTimeString([], {
               hour: "2-digit",
@@ -58,7 +59,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
               onDone();
             }
           }}
-          className="h-11 rounded-xl px-3 text-sm font-medium text-rose-400 active:bg-slate-800"
+          className="h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-card"
         >
           Discard
         </button>
@@ -67,10 +68,10 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
       {draft.exercises.map((log, i) => (
         <section
           key={log.exerciseId}
-          className="rounded-2xl border border-slate-800 bg-slate-800/60 p-4"
+          className="rounded-2xl border border-line bg-card p-4 shadow-sm"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-100">
+            <h2 className="font-display text-2xl font-semibold uppercase">
               {exerciseName(log.exerciseId)}
             </h2>
             {log.sets.length === 0 && (
@@ -80,7 +81,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                 onClick={() =>
                   update(draft.exercises.filter((_, j) => j !== i))
                 }
-                className="h-11 w-11 rounded-lg text-slate-500 active:bg-slate-700"
+                className="h-11 w-11 rounded-lg text-steel transition-colors active:bg-chalk"
               >
                 ✕
               </button>
@@ -88,53 +89,55 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
           </div>
 
           {log.sets.map((set, si) => (
-            <div
-              key={si}
-              className="mt-3 flex items-end justify-between gap-2 border-t border-slate-700/60 pt-3"
-            >
-              <span className="mb-3 w-6 text-sm font-bold text-slate-500">
-                {si + 1}
-              </span>
-              <Stepper
-                label="kg"
-                value={set.weight}
-                step={2.5}
-                decimals={2}
-                onChange={(weight) =>
-                  updateLog(i, {
-                    ...log,
-                    sets: log.sets.map((s, j) =>
-                      j === si ? { ...s, weight } : s,
-                    ),
-                  })
-                }
-              />
-              <Stepper
-                label="reps"
-                value={set.reps}
-                step={1}
-                onChange={(reps) =>
-                  updateLog(i, {
-                    ...log,
-                    sets: log.sets.map((s, j) =>
-                      j === si ? { ...s, reps } : s,
-                    ),
-                  })
-                }
-              />
-              <button
-                type="button"
-                aria-label={`Remove set ${si + 1}`}
-                onClick={() =>
-                  updateLog(i, {
-                    ...log,
-                    sets: log.sets.filter((_, j) => j !== si),
-                  })
-                }
-                className="mb-1 h-11 w-8 rounded-lg text-slate-500 active:bg-slate-700"
-              >
-                ✕
-              </button>
+            <div key={si} className="mt-3 border-t border-line pt-3">
+              <div className="flex items-end justify-between gap-2">
+                <span className="mb-3 w-6 font-display text-lg font-bold text-steel">
+                  {si + 1}
+                </span>
+                <Stepper
+                  label="kg"
+                  value={set.weight}
+                  step={2.5}
+                  decimals={2}
+                  onChange={(weight) =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.map((s, j) =>
+                        j === si ? { ...s, weight } : s,
+                      ),
+                    })
+                  }
+                />
+                <Stepper
+                  label="reps"
+                  value={set.reps}
+                  step={1}
+                  onChange={(reps) =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.map((s, j) =>
+                        j === si ? { ...s, reps } : s,
+                      ),
+                    })
+                  }
+                />
+                <button
+                  type="button"
+                  aria-label={`Remove set ${si + 1}`}
+                  onClick={() =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.filter((_, j) => j !== si),
+                    })
+                  }
+                  className="mb-1 h-11 w-8 rounded-lg text-steel transition-colors active:bg-chalk"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="mt-2 pl-8">
+                <PlateStack weight={set.weight} />
+              </div>
             </div>
           ))}
 
@@ -143,7 +146,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             onClick={() =>
               updateLog(i, { ...log, sets: [...log.sets, seedSet(log)] })
             }
-            className="mt-3 h-12 w-full rounded-xl border border-slate-700 text-base font-semibold text-emerald-400 active:bg-slate-700"
+            className="mt-3 h-12 w-full rounded-xl border border-line text-base font-semibold text-plate-red transition-colors active:bg-chalk"
           >
             + Add set
           </button>
@@ -164,7 +167,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
           onDone();
         }}
         disabled={loggedSets === 0}
-        className="h-14 w-full rounded-2xl bg-emerald-600 text-lg font-semibold text-white disabled:opacity-40 active:bg-emerald-700"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors disabled:opacity-40 active:bg-plate-red-deep"
       >
         Finish workout
       </button>

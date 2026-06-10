@@ -47,7 +47,7 @@ export default function ExerciseInput({
           if (e.key === "Enter") add();
         }}
         placeholder="Exercise name (e.g. Squat)"
-        className="h-12 min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-4 text-base text-slate-100 placeholder:text-slate-500 outline-none focus:border-emerald-500"
+        className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-card px-4 text-base text-iron shadow-sm outline-none placeholder:text-steel/70 focus:border-plate-red"
       />
       <datalist id="exercise-suggestions">
         {suggestions.map((e) => (
@@ -58,7 +58,7 @@ export default function ExerciseInput({
         type="button"
         onClick={add}
         disabled={!name.trim()}
-        className="h-12 shrink-0 rounded-xl bg-emerald-600 px-5 text-base font-semibold text-white disabled:opacity-40 active:bg-emerald-700"
+        className="h-12 shrink-0 rounded-xl bg-iron px-5 text-base font-semibold text-chalk transition-colors disabled:opacity-40 active:bg-iron/80"
       >
         Add
       </button>

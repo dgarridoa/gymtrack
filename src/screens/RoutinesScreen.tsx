@@ -23,10 +23,10 @@ export default function RoutinesScreen({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-slate-100">Routines</h1>
+      <h1 className="font-display text-4xl font-bold uppercase">Routines</h1>
 
       {data.routines.length === 0 && (
-        <p className="rounded-xl bg-slate-800/60 p-4 text-sm text-slate-400">
+        <p className="rounded-2xl border border-line bg-card p-4 text-sm text-steel shadow-sm">
           No routines yet. Create one with your usual exercises, then start a
           workout from it with one tap.
         </p>
@@ -35,14 +35,14 @@ export default function RoutinesScreen({
       {data.routines.map((routine) => (
         <div
           key={routine.id}
-          className="rounded-2xl border border-slate-800 bg-slate-800/60 p-4"
+          className="rounded-2xl border border-line bg-card p-4 shadow-sm"
         >
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h2 className="text-lg font-semibold text-slate-100">
+              <h2 className="font-display text-2xl font-semibold uppercase">
                 {routine.name}
               </h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-steel">
                 {routine.exerciseIds.length === 0
                   ? "No exercises"
                   : routine.exerciseIds.map(exerciseName).join(" · ")}
@@ -51,7 +51,7 @@ export default function RoutinesScreen({
             <button
               type="button"
               onClick={() => setEditing(routine)}
-              className="h-11 shrink-0 rounded-xl px-3 text-sm font-medium text-slate-300 active:bg-slate-700"
+              className="h-11 shrink-0 rounded-xl px-3 text-sm font-semibold text-steel transition-colors active:bg-chalk"
             >
               Edit
             </button>
@@ -59,7 +59,7 @@ export default function RoutinesScreen({
           <button
             type="button"
             onClick={() => onStartWorkout(routine)}
-            className="mt-3 h-12 w-full rounded-xl bg-emerald-600 text-base font-semibold text-white active:bg-emerald-700"
+            className="mt-3 h-12 w-full rounded-xl bg-plate-red text-base font-semibold text-white transition-colors active:bg-plate-red-deep"
           >
             Start workout
           </button>
@@ -69,7 +69,7 @@ export default function RoutinesScreen({
       <button
         type="button"
         onClick={() => setEditing("new")}
-        className="h-14 w-full rounded-2xl border-2 border-dashed border-slate-700 text-base font-semibold text-slate-300 active:bg-slate-800"
+        className="h-14 w-full rounded-2xl border-2 border-dashed border-line text-base font-semibold text-steel transition-colors active:bg-card"
       >
         + New routine
       </button>
@@ -77,7 +77,7 @@ export default function RoutinesScreen({
       <button
         type="button"
         onClick={() => onStartWorkout(null)}
-        className="h-12 w-full rounded-xl text-sm font-medium text-slate-400 active:bg-slate-800"
+        className="h-12 w-full rounded-xl text-sm font-semibold text-steel transition-colors active:bg-card"
       >
         Start an empty workout instead
       </button>
@@ -130,13 +130,13 @@ function RoutineEditor({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-100">
+        <h1 className="font-display text-4xl font-bold uppercase">
           {routine ? "Edit routine" : "New routine"}
         </h1>
         <button
           type="button"
           onClick={onClose}
-          className="h-11 rounded-xl px-3 text-sm font-medium text-slate-400 active:bg-slate-800"
+          className="h-11 rounded-xl px-3 text-sm font-semibold text-steel transition-colors active:bg-card"
         >
           Cancel
         </button>
@@ -147,16 +147,16 @@ function RoutineEditor({
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Routine name (e.g. Push Day)"
-        className="h-12 rounded-xl border border-slate-700 bg-slate-800 px-4 text-base text-slate-100 placeholder:text-slate-500 outline-none focus:border-emerald-500"
+        className="h-12 rounded-xl border border-line bg-card px-4 text-base text-iron shadow-sm outline-none placeholder:text-steel/70 focus:border-plate-red"
       />
 
       <div className="flex flex-col gap-2">
         {exerciseIds.map((id, i) => (
           <div
             key={id}
-            className="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-800/60 py-1 pl-4 pr-1"
+            className="flex items-center gap-1 rounded-xl border border-line bg-card py-1 pl-4 pr-1 shadow-sm"
           >
-            <span className="flex-1 truncate text-base text-slate-100">
+            <span className="flex-1 truncate text-base font-medium text-iron">
               {nameOf(id)}
             </span>
             <button
@@ -164,7 +164,7 @@ function RoutineEditor({
               aria-label="Move up"
               onClick={() => move(i, -1)}
               disabled={i === 0}
-              className="h-11 w-11 rounded-lg text-slate-400 disabled:opacity-30 active:bg-slate-700"
+              className="h-11 w-11 rounded-lg text-steel transition-colors disabled:opacity-30 active:bg-chalk"
             >
               ↑
             </button>
@@ -173,7 +173,7 @@ function RoutineEditor({
               aria-label="Move down"
               onClick={() => move(i, 1)}
               disabled={i === exerciseIds.length - 1}
-              className="h-11 w-11 rounded-lg text-slate-400 disabled:opacity-30 active:bg-slate-700"
+              className="h-11 w-11 rounded-lg text-steel transition-colors disabled:opacity-30 active:bg-chalk"
             >
               ↓
             </button>
@@ -183,7 +183,7 @@ function RoutineEditor({
               onClick={() =>
                 setExerciseIds(exerciseIds.filter((x) => x !== id))
               }
-              className="h-11 w-11 rounded-lg text-rose-400 active:bg-slate-700"
+              className="h-11 w-11 rounded-lg text-plate-red transition-colors active:bg-chalk"
             >
               ✕
             </button>
@@ -204,7 +204,7 @@ function RoutineEditor({
         type="button"
         onClick={save}
         disabled={!name.trim()}
-        className="h-14 w-full rounded-2xl bg-emerald-600 text-lg font-semibold text-white disabled:opacity-40 active:bg-emerald-700"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors disabled:opacity-40 active:bg-plate-red-deep"
       >
         Save routine
       </button>
@@ -218,7 +218,7 @@ function RoutineEditor({
               onClose();
             }
           }}
-          className="h-12 w-full rounded-xl text-sm font-medium text-rose-400 active:bg-slate-800"
+          className="h-12 w-full rounded-xl text-sm font-semibold text-plate-red transition-colors active:bg-card"
         >
           Delete routine
         </button>

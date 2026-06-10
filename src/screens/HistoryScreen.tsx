@@ -15,10 +15,10 @@ export default function HistoryScreen() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-slate-100">History</h1>
+      <h1 className="font-display text-4xl font-bold uppercase">History</h1>
 
       {data.sessions.length === 0 && (
-        <p className="rounded-xl bg-slate-800/60 p-4 text-sm text-slate-400">
+        <p className="rounded-2xl border border-line bg-card p-4 text-sm text-steel shadow-sm">
           No workouts logged yet. Start one from the Routines tab.
         </p>
       )}
@@ -36,7 +36,7 @@ export default function HistoryScreen() {
         return (
           <div
             key={session.id}
-            className="rounded-2xl border border-slate-800 bg-slate-800/60"
+            className="rounded-2xl border border-line bg-card shadow-sm"
           >
             <button
               type="button"
@@ -44,25 +44,25 @@ export default function HistoryScreen() {
               className="flex min-h-16 w-full items-center justify-between gap-2 p-4 text-left"
             >
               <div>
-                <h2 className="text-base font-semibold text-slate-100">
+                <h2 className="font-display text-xl font-semibold uppercase">
                   {session.routineName || "Workout"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-steel">
                   {formatDate(session.startedAt)} · {totalSets} sets ·{" "}
                   {Math.round(volume).toLocaleString()} kg volume
                 </p>
               </div>
-              <span className="text-slate-500">{open ? "▴" : "▾"}</span>
+              <span className="text-steel">{open ? "▴" : "▾"}</span>
             </button>
 
             {open && (
-              <div className="border-t border-slate-700/60 p-4 pt-3">
+              <div className="border-t border-line p-4 pt-3">
                 {session.exercises.map((log) => (
                   <div key={log.exerciseId} className="mb-3 last:mb-0">
-                    <h3 className="text-sm font-semibold text-slate-200">
+                    <h3 className="text-sm font-semibold text-iron">
                       {exerciseName(log.exerciseId)}
                     </h3>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-steel">
                       {log.sets
                         .map((s) => `${s.weight}kg × ${s.reps}`)
                         .join("  ·  ")}
@@ -79,7 +79,7 @@ export default function HistoryScreen() {
                       });
                     }
                   }}
-                  className="mt-2 h-11 rounded-xl px-3 text-sm font-medium text-rose-400 active:bg-slate-700"
+                  className="mt-2 h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-chalk"
                 >
                   Delete workout
                 </button>

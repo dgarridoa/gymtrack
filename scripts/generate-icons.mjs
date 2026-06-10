@@ -4,9 +4,9 @@
 import { deflateSync } from "node:zlib";
 import { writeFileSync, mkdirSync } from "node:fs";
 
-const BG = [15, 23, 42]; // slate-900
-const BAR = [148, 163, 184]; // slate-400
-const PLATE = [52, 211, 153]; // emerald-400
+const BG = [245, 244, 239]; // chalk
+const BAR = [26, 28, 33]; // iron
+const PLATE = [200, 16, 46]; // IWF 25kg plate red
 
 function crc32(buf) {
   let c,

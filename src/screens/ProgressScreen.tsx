@@ -36,10 +36,10 @@ export default function ProgressScreen() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-slate-100">Progress</h1>
+      <h1 className="font-display text-4xl font-bold uppercase">Progress</h1>
 
       {exercises.length === 0 ? (
-        <p className="rounded-xl bg-slate-800/60 p-4 text-sm text-slate-400">
+        <p className="rounded-2xl border border-line bg-card p-4 text-sm text-steel shadow-sm">
           Log a few workouts and your progress per exercise will show up here.
         </p>
       ) : (
@@ -50,10 +50,10 @@ export default function ProgressScreen() {
                 key={e.id}
                 type="button"
                 onClick={() => setSelectedId(e.id)}
-                className={`h-11 rounded-full px-4 text-sm font-medium ${
+                className={`h-11 rounded-full px-4 text-sm font-semibold transition-colors ${
                   selected?.id === e.id
-                    ? "bg-emerald-600 text-white"
-                    : "border border-slate-700 bg-slate-800 text-slate-300"
+                    ? "bg-iron text-chalk"
+                    : "border border-line bg-card text-steel"
                 }`}
               >
                 {e.name}
@@ -62,27 +62,27 @@ export default function ProgressScreen() {
           </div>
 
           {selected && history.length > 0 && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-800/60 p-4">
-              <h2 className="text-base font-semibold text-slate-100">
-                {selected.name} — top set weight
+            <div className="rounded-2xl border border-line bg-card p-4 shadow-sm">
+              <h2 className="font-display text-xl font-semibold uppercase">
+                {selected.name} — top set
               </h2>
               <Sparkline values={history.map((h) => h.best.weight)} />
               <div className="mt-2 flex flex-col gap-1">
                 {[...history].reverse().map((h, i) => (
                   <div
                     key={i}
-                    className="flex justify-between border-t border-slate-700/60 py-2 text-sm first:border-t-0"
+                    className="flex justify-between border-t border-line py-2 text-sm first:border-t-0"
                   >
-                    <span className="text-slate-400">
+                    <span className="text-steel">
                       {new Date(h.date).toLocaleDateString([], {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
                     </span>
-                    <span className="font-medium text-slate-200">
+                    <span className="font-medium text-iron">
                       {h.best.weight}kg × {h.best.reps}
-                      <span className="ml-2 text-slate-500">
+                      <span className="ml-2 text-steel">
                         {Math.round(h.volume).toLocaleString()}kg vol
                       </span>
                     </span>
