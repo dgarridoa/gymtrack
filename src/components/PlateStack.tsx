@@ -12,7 +12,8 @@ const PLATES: Plate[] = [
   { kg: 15, color: "var(--color-plate-yellow)", h: 20 },
   { kg: 10, color: "var(--color-plate-green)", h: 17 },
   { kg: 5, color: "#ffffff", h: 14, outlined: true },
-  { kg: 2.5, color: "var(--color-iron)", h: 11 },
+  // IWF change plates: 2.5kg is red (distinguished from 25 by height).
+  { kg: 2.5, color: "var(--color-plate-red)", h: 11 },
   { kg: 1.25, color: "#9aa0a8", h: 9 },
 ];
 

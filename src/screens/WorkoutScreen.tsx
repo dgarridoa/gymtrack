@@ -89,11 +89,29 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
           </div>
 
           {log.sets.map((set, si) => (
-            <div key={si} className="mt-3 border-t border-line pt-3">
-              <div className="flex items-end justify-between gap-2">
-                <span className="mb-3 w-6 font-display text-lg font-bold text-steel">
-                  {si + 1}
+            <div key={si} className="mt-3 border-t border-line pt-2">
+              <div className="flex min-h-11 items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-widest text-steel">
+                  Set {si + 1}
                 </span>
+                <div className="flex min-w-0 flex-1 justify-end overflow-hidden">
+                  <PlateStack weight={set.weight} />
+                </div>
+                <button
+                  type="button"
+                  aria-label={`Remove set ${si + 1}`}
+                  onClick={() =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.filter((_, j) => j !== si),
+                    })
+                  }
+                  className="h-11 w-11 shrink-0 rounded-lg text-steel transition-colors active:bg-chalk"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <Stepper
                   label="kg"
                   value={set.weight}
@@ -121,22 +139,6 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                     })
                   }
                 />
-                <button
-                  type="button"
-                  aria-label={`Remove set ${si + 1}`}
-                  onClick={() =>
-                    updateLog(i, {
-                      ...log,
-                      sets: log.sets.filter((_, j) => j !== si),
-                    })
-                  }
-                  className="mb-1 h-11 w-8 rounded-lg text-steel transition-colors active:bg-chalk"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="mt-2 pl-8">
-                <PlateStack weight={set.weight} />
               </div>
             </div>
           ))}
@@ -167,7 +169,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
           onDone();
         }}
         disabled={loggedSets === 0}
-        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors disabled:opacity-40 active:bg-plate-red-deep"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-on-red transition-colors disabled:opacity-40 active:bg-plate-red-deep"
       >
         Finish workout
       </button>

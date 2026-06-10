@@ -59,7 +59,7 @@ export default function RoutinesScreen({
           <button
             type="button"
             onClick={() => onStartWorkout(routine)}
-            className="mt-3 h-12 w-full rounded-xl bg-plate-red text-base font-semibold text-white transition-colors active:bg-plate-red-deep"
+            className="mt-3 h-12 w-full rounded-xl bg-plate-red text-base font-semibold text-on-red transition-colors active:bg-plate-red-deep"
           >
             Start workout
           </button>
@@ -204,7 +204,7 @@ function RoutineEditor({
         type="button"
         onClick={save}
         disabled={!name.trim()}
-        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors disabled:opacity-40 active:bg-plate-red-deep"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-on-red transition-colors disabled:opacity-40 active:bg-plate-red-deep"
       >
         Save routine
       </button>

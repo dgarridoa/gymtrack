@@ -44,7 +44,7 @@ export default function DataScreen() {
       <button
         type="button"
         onClick={() => exportToFile(data)}
-        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-white transition-colors active:bg-plate-red-deep"
+        className="h-14 w-full rounded-2xl bg-plate-red text-lg font-semibold text-on-red transition-colors active:bg-plate-red-deep"
       >
         Export backup (JSON)
       </button>

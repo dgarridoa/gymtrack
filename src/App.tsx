@@ -40,7 +40,7 @@ export default function App() {
         <button
           type="button"
           onClick={() => setInWorkout(true)}
-          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mx-auto h-12 max-w-md rounded-2xl bg-plate-yellow text-base font-semibold text-iron shadow-lg transition-colors active:bg-plate-yellow/80"
+          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mx-auto h-12 max-w-md rounded-2xl bg-plate-yellow text-base font-semibold text-onyx shadow-lg transition-colors active:bg-plate-yellow/80"
         >
           ▶ Resume workout — {draft.routineName}
         </button>
