@@ -30,6 +30,12 @@ type Action =
   | { type: "cancelWorkout" }
   | { type: "finishWorkout" }
   | { type: "deleteSession"; sessionId: string }
+  | {
+      type: "updateSession";
+      sessionId: string;
+      exercises: ExerciseLog[];
+      newExercises: Exercise[];
+    }
   | { type: "importData"; data: AppData };
 
 function reducer(state: State, action: Action): State {
@@ -132,6 +138,29 @@ function reducer(state: State, action: Action): State {
           ),
         },
       };
+    case "updateSession": {
+      // Drop empty sets and exercises, like finishWorkout does.
+      const logged = action.exercises
+        .map((log) => ({
+          ...log,
+          sets: log.sets.filter((s) => s.reps > 0),
+        }))
+        .filter((log) => log.sets.length > 0);
+      if (logged.length === 0) return state;
+      const kept = action.newExercises.filter((e) =>
+        logged.some((log) => log.exerciseId === e.id),
+      );
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          exercises: [...state.data.exercises, ...kept],
+          sessions: state.data.sessions.map((s) =>
+            s.id === action.sessionId ? { ...s, exercises: logged } : s,
+          ),
+        },
+      };
+    }
     case "importData":
       return { data: action.data, draft: null };
   }

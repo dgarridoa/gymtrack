@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStore } from "../store";
+import SessionEditor from "../components/SessionEditor";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString([], {
@@ -12,6 +13,7 @@ const formatDate = (iso: string) =>
 export default function HistoryScreen() {
   const { data, dispatch, exerciseName } = useStore();
   const [openId, setOpenId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,7 +42,10 @@ export default function HistoryScreen() {
           >
             <button
               type="button"
-              onClick={() => setOpenId(open ? null : session.id)}
+              onClick={() => {
+                setOpenId(open ? null : session.id);
+                setEditingId(null);
+              }}
               className="flex min-h-16 w-full items-center justify-between gap-2 p-4 text-left"
             >
               <div>
@@ -55,7 +60,14 @@ export default function HistoryScreen() {
               <span className="text-steel">{open ? "▴" : "▾"}</span>
             </button>
 
-            {open && (
+            {open && editingId === session.id && (
+              <SessionEditor
+                session={session}
+                onClose={() => setEditingId(null)}
+              />
+            )}
+
+            {open && editingId !== session.id && (
               <div className="border-t border-line p-4 pt-3">
                 {session.exercises.map((log) => (
                   <div key={log.exerciseId} className="mb-3 last:mb-0">
@@ -69,20 +81,29 @@ export default function HistoryScreen() {
                     </p>
                   </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("Delete this workout from history?")) {
-                      dispatch({
-                        type: "deleteSession",
-                        sessionId: session.id,
-                      });
-                    }
-                  }}
-                  className="mt-2 h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-chalk"
-                >
-                  Delete workout
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(session.id)}
+                    className="h-11 rounded-xl px-3 text-sm font-semibold text-iron transition-colors active:bg-chalk"
+                  >
+                    Edit workout
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm("Delete this workout from history?")) {
+                        dispatch({
+                          type: "deleteSession",
+                          sessionId: session.id,
+                        });
+                      }
+                    }}
+                    className="h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-chalk"
+                  >
+                    Delete workout
+                  </button>
+                </div>
               </div>
             )}
           </div>
