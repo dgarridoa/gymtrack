@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 interface StepperProps {
   label: string;
   value: number;
@@ -23,6 +25,11 @@ export default function Stepper({
   const clamp = (v: number) =>
     Math.max(min, Number(v.toFixed(decimals > 0 ? decimals : 0)));
 
+  // Raw text while the field is focused, so it can be empty or hold
+  // intermediate input ("62.") without the committed number being
+  // written back into it (which caused stray leading zeros).
+  const [text, setText] = useState<string | null>(null);
+
   return (
     <div className="flex w-full flex-col items-center gap-1">
       <span className="text-xs font-semibold uppercase tracking-widest text-steel">
@@ -42,14 +49,23 @@ export default function Stepper({
           inputMode="decimal"
           step={step}
           min={min}
-          value={value}
+          value={text ?? String(value)}
           aria-label={label}
           className="h-12 min-w-0 flex-1 border-x border-line bg-transparent text-center font-display text-2xl font-semibold text-iron outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           onChange={(e) => {
+            setText(e.target.value);
             const parsed = Number(e.target.value);
-            onChange(Number.isFinite(parsed) ? clamp(parsed) : min);
+            if (e.target.value !== "" && Number.isFinite(parsed)) {
+              onChange(clamp(parsed));
+            }
           }}
-          onFocus={(e) => e.target.select()}
+          onFocus={(e) => {
+            // Start from a blank field when the value is 0; select()
+            // is unreliable for number inputs on mobile Safari.
+            setText(value === 0 ? "" : String(value));
+            e.target.select();
+          }}
+          onBlur={() => setText(null)}
         />
         <button
           type="button"
