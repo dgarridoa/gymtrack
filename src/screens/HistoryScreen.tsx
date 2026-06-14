@@ -69,16 +69,35 @@ export default function HistoryScreen() {
 
             {open && editingId !== session.id && (
               <div className="border-t border-line p-4 pt-3">
+                {session.note && (
+                  <p className="mb-3 text-sm italic text-steel">
+                    “{session.note}”
+                  </p>
+                )}
                 {session.exercises.map((log) => (
                   <div key={log.exerciseId} className="mb-3 last:mb-0">
                     <h3 className="text-sm font-semibold text-iron">
                       {exerciseName(log.exerciseId)}
                     </h3>
+                    {log.note && (
+                      <p className="text-sm italic text-steel">“{log.note}”</p>
+                    )}
                     <p className="text-sm text-steel">
                       {log.sets
                         .map((s) => `${s.weight}kg × ${s.reps}`)
                         .join("  ·  ")}
                     </p>
+                    {log.sets.some((s) => s.note) && (
+                      <ul className="mt-0.5">
+                        {log.sets.map((s, si) =>
+                          s.note ? (
+                            <li key={si} className="text-sm italic text-steel">
+                              Set {si + 1} — {s.note}
+                            </li>
+                          ) : null,
+                        )}
+                      </ul>
+                    )}
                   </div>
                 ))}
                 <div className="mt-2 flex gap-2">

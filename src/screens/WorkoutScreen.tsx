@@ -3,6 +3,7 @@ import { useStore } from "../store";
 import Stepper from "../components/Stepper";
 import ExerciseInput from "../components/ExerciseInput";
 import PlateStack from "../components/PlateStack";
+import NoteField from "../components/NoteField";
 
 export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const { data, draft, dispatch, exerciseName } = useStore();
@@ -69,6 +70,13 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
         </button>
       </div>
 
+      <NoteField
+        label="Workout note"
+        placeholder="How did this session feel?"
+        value={draft.note}
+        onChange={(note) => dispatch({ type: "setDraftNote", note })}
+      />
+
       {draft.exercises.map((log, i) => {
         const prevSets = lastSessionSets(log.exerciseId);
         return (
@@ -99,6 +107,15 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
               {prevSets.map((s) => `${s.weight}kg × ${s.reps}`).join(" · ")}
             </p>
           )}
+
+          <div className="mt-1">
+            <NoteField
+              label="Exercise note"
+              placeholder="Form cue, setup, tempo…"
+              value={log.note}
+              onChange={(note) => updateLog(i, { ...log, note })}
+            />
+          </div>
 
           {log.sets.map((set, si) => (
             <div key={si} className="mt-3 border-t border-line pt-2">
@@ -147,6 +164,22 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                       ...log,
                       sets: log.sets.map((s, j) =>
                         j === si ? { ...s, reps } : s,
+                      ),
+                    })
+                  }
+                />
+              </div>
+              <div className="mt-1">
+                <NoteField
+                  compact
+                  label="Set note"
+                  placeholder="Note for this set…"
+                  value={set.note}
+                  onChange={(note) =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.map((s, j) =>
+                        j === si ? { ...s, note } : s,
                       ),
                     })
                   }

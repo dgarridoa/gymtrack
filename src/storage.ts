@@ -108,9 +108,17 @@ export function validateData(value: unknown): AppData {
         if (typeof set.weight !== "number" || typeof set.reps !== "number") {
           throw new Error("Each set needs numeric 'weight' and 'reps'.");
         }
-        return { weight: set.weight, reps: set.reps };
+        return {
+          weight: set.weight,
+          reps: set.reps,
+          ...(typeof set.note === "string" ? { note: set.note } : {}),
+        };
       });
-      return { exerciseId: log.exerciseId, sets };
+      return {
+        exerciseId: log.exerciseId,
+        sets,
+        ...(typeof log.note === "string" ? { note: log.note } : {}),
+      };
     });
     return {
       id: se.id,
@@ -120,6 +128,7 @@ export function validateData(value: unknown): AppData {
       finishedAt:
         typeof se.finishedAt === "string" ? se.finishedAt : se.startedAt,
       exercises: exerciseLogs,
+      ...(typeof se.note === "string" ? { note: se.note } : {}),
     };
   });
   return { version: 1, exercises, routines, sessions };

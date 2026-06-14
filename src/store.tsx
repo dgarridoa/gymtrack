@@ -26,6 +26,7 @@ type Action =
   | { type: "deleteRoutine"; routineId: string }
   | { type: "startWorkout"; routine: Routine | null }
   | { type: "updateDraft"; exercises: ExerciseLog[] }
+  | { type: "setDraftNote"; note: string }
   | { type: "addDraftExercise"; exercise: Exercise; isNew: boolean }
   | { type: "cancelWorkout" }
   | { type: "finishWorkout" }
@@ -35,6 +36,7 @@ type Action =
       sessionId: string;
       exercises: ExerciseLog[];
       newExercises: Exercise[];
+      note?: string;
     }
   | { type: "importData"; data: AppData };
 
@@ -86,6 +88,12 @@ function reducer(state: State, action: Action): State {
         ...state,
         draft: { ...state.draft, exercises: action.exercises },
       };
+    case "setDraftNote":
+      if (!state.draft) return state;
+      return {
+        ...state,
+        draft: { ...state.draft, note: action.note },
+      };
     case "addDraftExercise": {
       if (!state.draft) return state;
       return {
@@ -122,6 +130,7 @@ function reducer(state: State, action: Action): State {
         startedAt: state.draft.startedAt,
         finishedAt: new Date().toISOString(),
         exercises: logged,
+        note: state.draft.note,
       };
       return {
         draft: null,
@@ -156,7 +165,9 @@ function reducer(state: State, action: Action): State {
           ...state.data,
           exercises: [...state.data.exercises, ...kept],
           sessions: state.data.sessions.map((s) =>
-            s.id === action.sessionId ? { ...s, exercises: logged } : s,
+            s.id === action.sessionId
+              ? { ...s, exercises: logged, note: action.note }
+              : s,
           ),
         },
       };

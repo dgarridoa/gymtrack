@@ -12,11 +12,13 @@ export interface Routine {
 export interface SetEntry {
   weight: number;
   reps: number;
+  note?: string;
 }
 
 export interface ExerciseLog {
   exerciseId: string;
   sets: SetEntry[];
+  note?: string;
 }
 
 export interface Session {
@@ -26,6 +28,7 @@ export interface Session {
   startedAt: string;
   finishedAt: string;
   exercises: ExerciseLog[];
+  note?: string;
 }
 
 export interface DraftWorkout {
@@ -33,6 +36,7 @@ export interface DraftWorkout {
   routineName: string;
   startedAt: string;
   exercises: ExerciseLog[];
+  note?: string;
 }
 
 export interface AppData {

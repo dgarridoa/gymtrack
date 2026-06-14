@@ -4,6 +4,7 @@ import { useStore } from "../store";
 import Stepper from "./Stepper";
 import ExerciseInput from "./ExerciseInput";
 import PlateStack from "./PlateStack";
+import NoteField from "./NoteField";
 
 /**
  * Inline editor for a logged session: change sets, add/remove sets and
@@ -25,6 +26,7 @@ export default function SessionEditor({
   );
   // Brand-new exercises typed in during editing, committed on save.
   const [newExercises, setNewExercises] = useState<Exercise[]>([]);
+  const [note, setNote] = useState<string | undefined>(session.note);
 
   const name = (id: string) =>
     newExercises.find((e) => e.id === id)?.name ?? exerciseName(id);
@@ -44,6 +46,15 @@ export default function SessionEditor({
 
   return (
     <div className="border-t border-line p-4 pt-3">
+      <div className="mb-4">
+        <NoteField
+          label="Workout note"
+          placeholder="How did this session feel?"
+          value={note}
+          onChange={(n) => setNote(n)}
+        />
+      </div>
+
       {exercises.map((log, i) => (
         <div key={log.exerciseId} className="mb-4 last:mb-0">
           <div className="flex items-center justify-between">
@@ -62,6 +73,15 @@ export default function SessionEditor({
                 ✕
               </button>
             )}
+          </div>
+
+          <div className="mt-1">
+            <NoteField
+              label="Exercise note"
+              placeholder="Form cue, setup, tempo…"
+              value={log.note}
+              onChange={(n) => updateLog(i, { ...log, note: n })}
+            />
           </div>
 
           {log.sets.map((set, si) => (
@@ -116,6 +136,22 @@ export default function SessionEditor({
                   }
                 />
               </div>
+              <div className="mt-1">
+                <NoteField
+                  compact
+                  label="Set note"
+                  placeholder="Note for this set…"
+                  value={set.note}
+                  onChange={(n) =>
+                    updateLog(i, {
+                      ...log,
+                      sets: log.sets.map((s, j) =>
+                        j === si ? { ...s, note: n } : s,
+                      ),
+                    })
+                  }
+                />
+              </div>
             </div>
           ))}
 
@@ -162,6 +198,7 @@ export default function SessionEditor({
               sessionId: session.id,
               exercises,
               newExercises,
+              note: note?.trim() ? note : undefined,
             });
             onClose();
           }}
