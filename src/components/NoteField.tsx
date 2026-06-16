@@ -1,5 +1,27 @@
+import type { ExerciseLog } from "../types";
+
+/**
+ * Keys of notes that currently hold text, in the same format the screens
+ * use to toggle open/closed: "workout", "ex:<id>", "set:<id>:<i>". Used to
+ * seed which notes start expanded so existing notes show on open.
+ */
+export function notedKeys(
+  note: string | undefined,
+  exercises: ExerciseLog[],
+): Set<string> {
+  const keys = new Set<string>();
+  if (note?.trim()) keys.add("workout");
+  for (const log of exercises) {
+    if (log.note?.trim()) keys.add(`ex:${log.exerciseId}`);
+    log.sets.forEach((s, si) => {
+      if (s.note?.trim()) keys.add(`set:${log.exerciseId}:${si}`);
+    });
+  }
+  return keys;
+}
+
 interface NoteToggleProps {
-  /** Accent-colored when the note is open or already has text. */
+  /** Accent-colored when the note has text. */
   active: boolean;
   onClick: () => void;
   /** Accessible name, e.g. "Workout note". */

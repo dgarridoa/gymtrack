@@ -4,7 +4,7 @@ import { useStore } from "../store";
 import Stepper from "./Stepper";
 import ExerciseInput from "./ExerciseInput";
 import PlateStack from "./PlateStack";
-import NoteField, { NoteToggle } from "./NoteField";
+import NoteField, { NoteToggle, notedKeys } from "./NoteField";
 
 /**
  * Inline editor for a logged session: change sets, add/remove sets and
@@ -27,8 +27,10 @@ export default function SessionEditor({
   // Brand-new exercises typed in during editing, committed on save.
   const [newExercises, setNewExercises] = useState<Exercise[]>([]);
   const [note, setNote] = useState<string | undefined>(session.note);
-  // Keys of empty-but-expanded notes (notes with text always show).
-  const [openNotes, setOpenNotes] = useState<Set<string>>(new Set());
+  // Keys of notes whose text panel is open; seeded so existing notes show.
+  const [openNotes, setOpenNotes] = useState<Set<string>>(() =>
+    notedKeys(session.note, session.exercises),
+  );
   const toggleNote = (key: string) =>
     setOpenNotes((prev) => {
       const next = new Set(prev);
@@ -69,7 +71,7 @@ export default function SessionEditor({
             <div className="flex items-center gap-1">
               <NoteToggle
                 label="Exercise note"
-                active={openNotes.has(`ex:${log.exerciseId}`) || !!log.note?.trim()}
+                active={!!log.note?.trim()}
                 onClick={() => toggleNote(`ex:${log.exerciseId}`)}
               />
               {log.sets.length === 0 && (
@@ -87,7 +89,7 @@ export default function SessionEditor({
             </div>
           </div>
 
-          {(openNotes.has(`ex:${log.exerciseId}`) || log.note?.trim()) && (
+          {openNotes.has(`ex:${log.exerciseId}`) && (
             <div className="mt-1">
               <NoteField
                 label="Exercise note"
@@ -113,10 +115,7 @@ export default function SessionEditor({
                 </div>
                 <NoteToggle
                   label={`Note for set ${si + 1}`}
-                  active={
-                    openNotes.has(`set:${log.exerciseId}:${si}`) ||
-                    !!set.note?.trim()
-                  }
+                  active={!!set.note?.trim()}
                   onClick={() => toggleNote(`set:${log.exerciseId}:${si}`)}
                 />
                 <button
@@ -162,8 +161,7 @@ export default function SessionEditor({
                   }
                 />
               </div>
-              {(openNotes.has(`set:${log.exerciseId}:${si}`) ||
-                set.note?.trim()) && (
+              {openNotes.has(`set:${log.exerciseId}:${si}`) && (
                 <div className="mt-1">
                   <NoteField
                     compact
@@ -215,7 +213,7 @@ export default function SessionEditor({
         />
       </div>
 
-      {(openNotes.has("workout") || note?.trim()) && (
+      {openNotes.has("workout") && (
         <div className="mt-4">
           <NoteField
             label="Workout note"
@@ -231,7 +229,7 @@ export default function SessionEditor({
       <div className="mt-4 flex items-center gap-2">
         <NoteToggle
           label="Workout note"
-          active={openNotes.has("workout") || !!note?.trim()}
+          active={!!note?.trim()}
           onClick={() => toggleNote("workout")}
         />
         <button

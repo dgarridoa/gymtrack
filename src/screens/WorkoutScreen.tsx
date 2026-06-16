@@ -4,13 +4,15 @@ import { useStore } from "../store";
 import Stepper from "../components/Stepper";
 import ExerciseInput from "../components/ExerciseInput";
 import PlateStack from "../components/PlateStack";
-import NoteField, { NoteToggle } from "../components/NoteField";
+import NoteField, { NoteToggle, notedKeys } from "../components/NoteField";
 
 export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const { data, draft, dispatch, exerciseName } = useStore();
-  // Keys of notes the user has opened while still empty; notes with text
-  // always show, so this only tracks empty-but-expanded fields.
-  const [openNotes, setOpenNotes] = useState<Set<string>>(new Set());
+  // Keys of notes whose text panel is open. Seeded so notes that already
+  // have text start visible; the pencil toggles each panel show/hide.
+  const [openNotes, setOpenNotes] = useState<Set<string>>(() =>
+    draft ? notedKeys(draft.note, draft.exercises) : new Set(),
+  );
   const toggleNote = (key: string) =>
     setOpenNotes((prev) => {
       const next = new Set(prev);
@@ -75,7 +77,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
         <div className="flex items-center gap-1">
           <NoteToggle
             label="Workout note"
-            active={openNotes.has("workout") || !!draft.note?.trim()}
+            active={!!draft.note?.trim()}
             onClick={() => toggleNote("workout")}
           />
           <button
@@ -93,7 +95,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
         </div>
       </div>
 
-      {(openNotes.has("workout") || draft.note?.trim()) && (
+      {openNotes.has("workout") && (
         <NoteField
           label="Workout note"
           placeholder="How did this session feel?"
@@ -118,7 +120,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             <div className="flex items-center gap-1">
               <NoteToggle
                 label="Exercise note"
-                active={openNotes.has(`ex:${log.exerciseId}`) || !!log.note?.trim()}
+                active={!!log.note?.trim()}
                 onClick={() => toggleNote(`ex:${log.exerciseId}`)}
               />
               {log.sets.length === 0 && (
@@ -142,7 +144,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             </p>
           )}
 
-          {(openNotes.has(`ex:${log.exerciseId}`) || log.note?.trim()) && (
+          {openNotes.has(`ex:${log.exerciseId}`) && (
             <div className="mt-1">
               <NoteField
                 label="Exercise note"
@@ -168,10 +170,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                 </div>
                 <NoteToggle
                   label={`Note for set ${si + 1}`}
-                  active={
-                    openNotes.has(`set:${log.exerciseId}:${si}`) ||
-                    !!set.note?.trim()
-                  }
+                  active={!!set.note?.trim()}
                   onClick={() => toggleNote(`set:${log.exerciseId}:${si}`)}
                 />
                 <button
@@ -217,8 +216,7 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                   }
                 />
               </div>
-              {(openNotes.has(`set:${log.exerciseId}:${si}`) ||
-                set.note?.trim()) && (
+              {openNotes.has(`set:${log.exerciseId}:${si}`) && (
                 <div className="mt-1">
                   <NoteField
                     compact
