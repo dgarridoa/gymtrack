@@ -5,6 +5,7 @@ import Stepper from "../components/Stepper";
 import ExerciseInput from "../components/ExerciseInput";
 import PlateStack from "../components/PlateStack";
 import NoteField, { NoteToggle, notedKeys } from "../components/NoteField";
+import EditableExerciseTitle from "../components/EditableExerciseTitle";
 
 export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const { data, draft, dispatch, exerciseName } = useStore();
@@ -114,9 +115,17 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
           className="rounded-2xl border border-line bg-card p-4 shadow-sm"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-2xl font-semibold uppercase">
-              {exerciseName(log.exerciseId)}
-            </h2>
+            <EditableExerciseTitle
+              name={exerciseName(log.exerciseId)}
+              onRename={(name) =>
+                dispatch({
+                  type: "renameExercise",
+                  exerciseId: log.exerciseId,
+                  name,
+                })
+              }
+              className="font-display text-2xl font-semibold uppercase min-w-0 flex-1"
+            />
             <div className="flex items-center gap-1">
               <NoteToggle
                 label="Exercise note"

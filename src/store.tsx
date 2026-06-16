@@ -24,6 +24,7 @@ interface State {
 type Action =
   | { type: "saveRoutine"; routine: Routine; newExercises: Exercise[] }
   | { type: "deleteRoutine"; routineId: string }
+  | { type: "renameExercise"; exerciseId: string; name: string }
   | { type: "startWorkout"; routine: Routine | null }
   | { type: "updateDraft"; exercises: ExerciseLog[] }
   | { type: "setDraftNote"; note: string }
@@ -69,6 +70,27 @@ function reducer(state: State, action: Action): State {
           ),
         },
       };
+    case "renameExercise": {
+      const name = action.name.trim();
+      if (!name) return state;
+      // Don't create two catalog exercises with the same name; ExerciseInput
+      // matches by name, so duplicates would silently merge on next add.
+      const clash = state.data.exercises.some(
+        (e) =>
+          e.id !== action.exerciseId &&
+          e.name.toLowerCase() === name.toLowerCase(),
+      );
+      if (clash) return state;
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          exercises: state.data.exercises.map((e) =>
+            e.id === action.exerciseId ? { ...e, name } : e,
+          ),
+        },
+      };
+    }
     case "startWorkout": {
       const draft: DraftWorkout = {
         routineId: action.routine?.id ?? null,

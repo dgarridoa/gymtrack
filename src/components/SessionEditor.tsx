@@ -5,6 +5,7 @@ import Stepper from "./Stepper";
 import ExerciseInput from "./ExerciseInput";
 import PlateStack from "./PlateStack";
 import NoteField, { NoteToggle, notedKeys } from "./NoteField";
+import EditableExerciseTitle from "./EditableExerciseTitle";
 
 /**
  * Inline editor for a logged session: change sets, add/remove sets and
@@ -65,9 +66,25 @@ export default function SessionEditor({
       {exercises.map((log, i) => (
         <div key={log.exerciseId} className="mb-4 last:mb-0">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-xl font-semibold uppercase">
-              {name(log.exerciseId)}
-            </h3>
+            <EditableExerciseTitle
+              name={name(log.exerciseId)}
+              onRename={(newName) => {
+                if (newExercises.some((e) => e.id === log.exerciseId)) {
+                  setNewExercises(
+                    newExercises.map((e) =>
+                      e.id === log.exerciseId ? { ...e, name: newName } : e,
+                    ),
+                  );
+                } else {
+                  dispatch({
+                    type: "renameExercise",
+                    exerciseId: log.exerciseId,
+                    name: newName,
+                  });
+                }
+              }}
+              className="font-display text-xl font-semibold uppercase min-w-0 flex-1"
+            />
             <div className="flex items-center gap-1">
               <NoteToggle
                 label="Exercise note"
