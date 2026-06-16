@@ -1,12 +1,28 @@
 import type { ExerciseLog, SetEntry } from "../types";
+import { useState } from "react";
 import { useStore } from "../store";
 import Stepper from "../components/Stepper";
 import ExerciseInput from "../components/ExerciseInput";
 import PlateStack from "../components/PlateStack";
-import NoteField from "../components/NoteField";
+import NoteField, { NoteToggle } from "../components/NoteField";
 
 export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
   const { data, draft, dispatch, exerciseName } = useStore();
+  // Keys of notes the user has opened while still empty; notes with text
+  // always show, so this only tracks empty-but-expanded fields.
+  const [openNotes, setOpenNotes] = useState<Set<string>>(new Set());
+  const toggleNote = (key: string) =>
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  const closeNote = (key: string) =>
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
   if (!draft) return null;
 
   const update = (exercises: ExerciseLog[]) =>
@@ -56,26 +72,37 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             {loggedSets} set{loggedSets === 1 ? "" : "s"} logged
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Discard this workout? Logged sets will be lost.")) {
-              dispatch({ type: "cancelWorkout" });
-              onDone();
-            }
-          }}
-          className="h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-card"
-        >
-          Discard
-        </button>
+        <div className="flex items-center gap-1">
+          <NoteToggle
+            label="Workout note"
+            active={openNotes.has("workout") || !!draft.note?.trim()}
+            onClick={() => toggleNote("workout")}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Discard this workout? Logged sets will be lost.")) {
+                dispatch({ type: "cancelWorkout" });
+                onDone();
+              }
+            }}
+            className="h-11 rounded-xl px-3 text-sm font-semibold text-plate-red transition-colors active:bg-card"
+          >
+            Discard
+          </button>
+        </div>
       </div>
 
-      <NoteField
-        label="Workout note"
-        placeholder="How did this session feel?"
-        value={draft.note}
-        onChange={(note) => dispatch({ type: "setDraftNote", note })}
-      />
+      {(openNotes.has("workout") || draft.note?.trim()) && (
+        <NoteField
+          label="Workout note"
+          placeholder="How did this session feel?"
+          value={draft.note}
+          autoFocus={openNotes.has("workout") && !draft.note?.trim()}
+          onChange={(note) => dispatch({ type: "setDraftNote", note })}
+          onBlurEmpty={() => closeNote("workout")}
+        />
+      )}
 
       {draft.exercises.map((log, i) => {
         const prevSets = lastSessionSets(log.exerciseId);
@@ -88,18 +115,25 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             <h2 className="font-display text-2xl font-semibold uppercase">
               {exerciseName(log.exerciseId)}
             </h2>
-            {log.sets.length === 0 && (
-              <button
-                type="button"
-                aria-label="Remove exercise"
-                onClick={() =>
-                  update(draft.exercises.filter((_, j) => j !== i))
-                }
-                className="h-11 w-11 rounded-lg text-steel transition-colors active:bg-chalk"
-              >
-                ✕
-              </button>
-            )}
+            <div className="flex items-center gap-1">
+              <NoteToggle
+                label="Exercise note"
+                active={openNotes.has(`ex:${log.exerciseId}`) || !!log.note?.trim()}
+                onClick={() => toggleNote(`ex:${log.exerciseId}`)}
+              />
+              {log.sets.length === 0 && (
+                <button
+                  type="button"
+                  aria-label="Remove exercise"
+                  onClick={() =>
+                    update(draft.exercises.filter((_, j) => j !== i))
+                  }
+                  className="h-11 w-11 rounded-lg text-steel transition-colors active:bg-chalk"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
           {prevSets && (
             <p className="text-sm text-steel">
@@ -108,14 +142,20 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
             </p>
           )}
 
-          <div className="mt-1">
-            <NoteField
-              label="Exercise note"
-              placeholder="Form cue, setup, tempo…"
-              value={log.note}
-              onChange={(note) => updateLog(i, { ...log, note })}
-            />
-          </div>
+          {(openNotes.has(`ex:${log.exerciseId}`) || log.note?.trim()) && (
+            <div className="mt-1">
+              <NoteField
+                label="Exercise note"
+                placeholder="Form cue, setup, tempo…"
+                value={log.note}
+                autoFocus={
+                  openNotes.has(`ex:${log.exerciseId}`) && !log.note?.trim()
+                }
+                onChange={(note) => updateLog(i, { ...log, note })}
+                onBlurEmpty={() => closeNote(`ex:${log.exerciseId}`)}
+              />
+            </div>
+          )}
 
           {log.sets.map((set, si) => (
             <div key={si} className="mt-3 border-t border-line pt-2">
@@ -126,6 +166,14 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                 <div className="flex min-w-0 flex-1 justify-end overflow-hidden">
                   <PlateStack weight={set.weight} />
                 </div>
+                <NoteToggle
+                  label={`Note for set ${si + 1}`}
+                  active={
+                    openNotes.has(`set:${log.exerciseId}:${si}`) ||
+                    !!set.note?.trim()
+                  }
+                  onClick={() => toggleNote(`set:${log.exerciseId}:${si}`)}
+                />
                 <button
                   type="button"
                   aria-label={`Remove set ${si + 1}`}
@@ -169,22 +217,30 @@ export default function WorkoutScreen({ onDone }: { onDone: () => void }) {
                   }
                 />
               </div>
-              <div className="mt-1">
-                <NoteField
-                  compact
-                  label="Set note"
-                  placeholder="Note for this set…"
-                  value={set.note}
-                  onChange={(note) =>
-                    updateLog(i, {
-                      ...log,
-                      sets: log.sets.map((s, j) =>
-                        j === si ? { ...s, note } : s,
-                      ),
-                    })
-                  }
-                />
-              </div>
+              {(openNotes.has(`set:${log.exerciseId}:${si}`) ||
+                set.note?.trim()) && (
+                <div className="mt-1">
+                  <NoteField
+                    compact
+                    label={`Note for set ${si + 1}`}
+                    placeholder="Note for this set…"
+                    value={set.note}
+                    autoFocus={
+                      openNotes.has(`set:${log.exerciseId}:${si}`) &&
+                      !set.note?.trim()
+                    }
+                    onChange={(note) =>
+                      updateLog(i, {
+                        ...log,
+                        sets: log.sets.map((s, j) =>
+                          j === si ? { ...s, note } : s,
+                        ),
+                      })
+                    }
+                    onBlurEmpty={() => closeNote(`set:${log.exerciseId}:${si}`)}
+                  />
+                </div>
+              )}
             </div>
           ))}
 

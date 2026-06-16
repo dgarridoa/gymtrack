@@ -4,7 +4,7 @@ import { useStore } from "../store";
 import Stepper from "./Stepper";
 import ExerciseInput from "./ExerciseInput";
 import PlateStack from "./PlateStack";
-import NoteField from "./NoteField";
+import NoteField, { NoteToggle } from "./NoteField";
 
 /**
  * Inline editor for a logged session: change sets, add/remove sets and
@@ -27,6 +27,20 @@ export default function SessionEditor({
   // Brand-new exercises typed in during editing, committed on save.
   const [newExercises, setNewExercises] = useState<Exercise[]>([]);
   const [note, setNote] = useState<string | undefined>(session.note);
+  // Keys of empty-but-expanded notes (notes with text always show).
+  const [openNotes, setOpenNotes] = useState<Set<string>>(new Set());
+  const toggleNote = (key: string) =>
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  const closeNote = (key: string) =>
+    setOpenNotes((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
 
   const name = (id: string) =>
     newExercises.find((e) => e.id === id)?.name ?? exerciseName(id);
@@ -46,43 +60,47 @@ export default function SessionEditor({
 
   return (
     <div className="border-t border-line p-4 pt-3">
-      <div className="mb-4">
-        <NoteField
-          label="Workout note"
-          placeholder="How did this session feel?"
-          value={note}
-          onChange={(n) => setNote(n)}
-        />
-      </div>
-
       {exercises.map((log, i) => (
         <div key={log.exerciseId} className="mb-4 last:mb-0">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-xl font-semibold uppercase">
               {name(log.exerciseId)}
             </h3>
-            {log.sets.length === 0 && (
-              <button
-                type="button"
-                aria-label="Remove exercise"
-                onClick={() =>
-                  setExercises(exercises.filter((_, j) => j !== i))
-                }
-                className="h-11 w-11 rounded-lg text-steel transition-colors active:bg-chalk"
-              >
-                ✕
-              </button>
-            )}
+            <div className="flex items-center gap-1">
+              <NoteToggle
+                label="Exercise note"
+                active={openNotes.has(`ex:${log.exerciseId}`) || !!log.note?.trim()}
+                onClick={() => toggleNote(`ex:${log.exerciseId}`)}
+              />
+              {log.sets.length === 0 && (
+                <button
+                  type="button"
+                  aria-label="Remove exercise"
+                  onClick={() =>
+                    setExercises(exercises.filter((_, j) => j !== i))
+                  }
+                  className="h-11 w-11 rounded-lg text-steel transition-colors active:bg-chalk"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="mt-1">
-            <NoteField
-              label="Exercise note"
-              placeholder="Form cue, setup, tempo…"
-              value={log.note}
-              onChange={(n) => updateLog(i, { ...log, note: n })}
-            />
-          </div>
+          {(openNotes.has(`ex:${log.exerciseId}`) || log.note?.trim()) && (
+            <div className="mt-1">
+              <NoteField
+                label="Exercise note"
+                placeholder="Form cue, setup, tempo…"
+                value={log.note}
+                autoFocus={
+                  openNotes.has(`ex:${log.exerciseId}`) && !log.note?.trim()
+                }
+                onChange={(n) => updateLog(i, { ...log, note: n })}
+                onBlurEmpty={() => closeNote(`ex:${log.exerciseId}`)}
+              />
+            </div>
+          )}
 
           {log.sets.map((set, si) => (
             <div key={si} className="mt-2 border-t border-line pt-2">
@@ -93,6 +111,14 @@ export default function SessionEditor({
                 <div className="flex min-w-0 flex-1 justify-end overflow-hidden">
                   <PlateStack weight={set.weight} />
                 </div>
+                <NoteToggle
+                  label={`Note for set ${si + 1}`}
+                  active={
+                    openNotes.has(`set:${log.exerciseId}:${si}`) ||
+                    !!set.note?.trim()
+                  }
+                  onClick={() => toggleNote(`set:${log.exerciseId}:${si}`)}
+                />
                 <button
                   type="button"
                   aria-label={`Remove set ${si + 1}`}
@@ -136,22 +162,30 @@ export default function SessionEditor({
                   }
                 />
               </div>
-              <div className="mt-1">
-                <NoteField
-                  compact
-                  label="Set note"
-                  placeholder="Note for this set…"
-                  value={set.note}
-                  onChange={(n) =>
-                    updateLog(i, {
-                      ...log,
-                      sets: log.sets.map((s, j) =>
-                        j === si ? { ...s, note: n } : s,
-                      ),
-                    })
-                  }
-                />
-              </div>
+              {(openNotes.has(`set:${log.exerciseId}:${si}`) ||
+                set.note?.trim()) && (
+                <div className="mt-1">
+                  <NoteField
+                    compact
+                    label={`Note for set ${si + 1}`}
+                    placeholder="Note for this set…"
+                    value={set.note}
+                    autoFocus={
+                      openNotes.has(`set:${log.exerciseId}:${si}`) &&
+                      !set.note?.trim()
+                    }
+                    onChange={(n) =>
+                      updateLog(i, {
+                        ...log,
+                        sets: log.sets.map((s, j) =>
+                          j === si ? { ...s, note: n } : s,
+                        ),
+                      })
+                    }
+                    onBlurEmpty={() => closeNote(`set:${log.exerciseId}:${si}`)}
+                  />
+                </div>
+              )}
             </div>
           ))}
 
@@ -181,7 +215,25 @@ export default function SessionEditor({
         />
       </div>
 
-      <div className="mt-4 flex gap-2">
+      {(openNotes.has("workout") || note?.trim()) && (
+        <div className="mt-4">
+          <NoteField
+            label="Workout note"
+            placeholder="How did this session feel?"
+            value={note}
+            autoFocus={openNotes.has("workout") && !note?.trim()}
+            onChange={(n) => setNote(n)}
+            onBlurEmpty={() => closeNote("workout")}
+          />
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center gap-2">
+        <NoteToggle
+          label="Workout note"
+          active={openNotes.has("workout") || !!note?.trim()}
+          onClick={() => toggleNote("workout")}
+        />
         <button
           type="button"
           onClick={onClose}
