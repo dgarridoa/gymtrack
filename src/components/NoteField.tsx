@@ -40,6 +40,10 @@ export function NoteToggle({ active, onClick, label }: NoteToggleProps) {
       type="button"
       aria-label={label}
       aria-pressed={active}
+      // Keep focus on an open textarea so its blur-to-collapse doesn't fire
+      // before this click; otherwise toggling an empty note off would let
+      // the blur close it and the click immediately reopen it.
+      onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={`h-11 w-11 shrink-0 rounded-lg transition-colors active:bg-chalk ${
         active ? "text-plate-red" : "text-steel"
